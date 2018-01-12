@@ -1,8 +1,11 @@
 #include "headers/exceptions.hpp"
+#include "headers/IOperands.hpp"
 
-OverflowException::OverflowException(std::string const & type, int line)
+std::string *STR_TYPE = ["INT8", "INT16", "INT32", "Float", "Double"];
+
+OverflowException::OverflowException(eOperandType const & type, int line)
 {
-	this->_type = type;
+	this->_type = STR_TYPE[type];
 	this->_line = line;
 }
 
@@ -15,9 +18,9 @@ const char *OverflowException::what(void) const throw()
 	return (error.str().c_str());
 }
 
-UnderflowException::UnderflowException(std::string const & type, int line)
+UnderflowException::UnderflowException(eOperandType const & type, int line)
 {
-	this->_type = type;
+	this->_type = STR_TYPE[type];
 	this->_line = line;
 }
 
