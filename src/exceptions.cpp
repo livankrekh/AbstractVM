@@ -32,3 +32,8 @@ const char *UnderflowException::what(void) const throw()
 	error << " \033[1min line #" << this->_line << "\033[0m\033[0m" << std::endl;
 	return (error.str().c_str());
 }
+
+const char * DivisionException::what(void) const throw()
+{
+	return ("\033[31mError #3: Division by zero!\033[0m\n");
+}
