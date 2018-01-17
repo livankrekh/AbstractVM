@@ -6,7 +6,6 @@
 # include <limits>
 # include "IOperands.hpp"
 # include "exceptions.hpp"
-# include "VM.hpp"
 
 template<typename T>
 class Type : public IOperand
