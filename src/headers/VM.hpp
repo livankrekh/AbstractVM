@@ -5,7 +5,7 @@
 # include "types.hpp"
 
 class VM;
-typedef IOperand const * (VM::*MFPTR)(std::string const & value);
+typedef IOperand const * (VM::*MFPTR)(std::string const & value) const;
 
 class VM
 {

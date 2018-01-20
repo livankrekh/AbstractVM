@@ -9,50 +9,47 @@
 class  OverflowException : public std::exception
 {
 public:
-	OverflowException(void) {}
-	OverflowException(std::string const & type, int line);
+	OverflowException(void);
+	OverflowException(eOperandType const & type, int line);
 	
-	const char *what(void) const throw();
+	virtual const char *what(void) const throw();
 	
-	~OverflowException(void) {}
+	~OverflowException(void) throw();
 
 private:
 	std::string		_type;
 	int				_line;
 
-	OverflowException(OverflowException const & cp);
 	OverflowException const & operator=(OverflowException const & rhs);
 };
 
 class  UnderflowException : public std::exception
 {
 public:
-	UnderflowException(void) {}
-	UnderflowException(std::string const & type, int line);
+	UnderflowException(void);
+	UnderflowException(eOperandType const & type, int line);
 	
-	const char *what(void) const throw();
+	virtual const char *what(void) const throw();
 	
-	~UnderflowException(void) {}
+	~UnderflowException(void) throw();
 
 private:
 	std::string		_type;
 	int				_line;
 
-	UnderflowException(UnderflowException const & cp);
 	UnderflowException const & operator=(UnderflowException const & rhs);
 };
 
 class DivisionException : public std::exception
 {
 public:
-	DivisionException(void) {}
+	DivisionException(void);
 
-	const char *what(void) const throw();
+	virtual const char *what(void) const throw();
 	
-	~DivisionException(void) {}
+	~DivisionException(void) throw();
 
 private:
-	DivisionException(DivisionException const & cp);
 	DivisionException const & operator=(DivisionException const & rhs);
 
 };
