@@ -1,11 +1,11 @@
-#ifndef IOPERANDS_HPP
-# define IOPERANDS_HPP
+#ifndef TYPES_HPP
+# define TYPES_HPP
 # include <iostream>
 # include <string>
 # include <climits>
 # include <limits>
-# include "IOperands.hpp"
 # include "exceptions.hpp"
+# include "VM.hpp"
 
 template<typename T>
 class Type : public IOperand
@@ -30,7 +30,7 @@ public:
 					throw OverflowException(this->_type, this->_line);
 				else if (find_exceptions(tmp, this->_type) == -1)
 					throw UnderflowException(this->_type, this->_line);
-				this->_val = static_cast<T>tmp;
+				this->_val = static_cast<T>(tmp);
 			}
 			else
 			{
@@ -39,7 +39,7 @@ public:
 					throw OverflowException(this->_type, this->_line);
 				else if (find_exceptions(tmp_float, this->_type) == -1)
 					throw UnderflowException(this->_type, this->_line);
-				this->_val = static_cast<T>tmp_float;
+				this->_val = static_cast<T>(tmp_float);
 			}
 		}
 		catch (std::exception const & e)
@@ -54,45 +54,55 @@ public:
 	IOperand const * operator+(IOperand const & rhs) const
 	{
 		IOperand const	*res;
+		Type 			*cpy;
 
-		res = AVM::vm.createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val + rhs.getValue()));
+		cpy = reinterpret_cast<Type*>(rhs);
+		res = vm->createOperand(this->getPrecisionType(rhs),
+									std::to_string(this->_val + cpy->getValue()));
 		return (res);
 	}
 
 	IOperand const * operator-(IOperand const & rhs) const
 	{
 		IOperand const	*res;
+		Type 			*cpy;
 
-		res = AVM::vm.createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val - rhs.getValue()));
+		cpy = reinterpret_cast<Type*>(rhs);
+		res = vm->createOperand(this->getPrecisionType(rhs),
+									std::to_string(this->_val - cpy->getValue()));
 		return (res);
 	}
 
 	IOperand const * operator*(IOperand const & rhs) const
 	{
 		IOperand const	*res;
+		Type 			*cpy;
 
-		res = AVM::vm.createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val * rhs.getValue()));
+		cpy = reinterpret_cast<Type*>(rhs);
+		res = vm->createOperand(this->getPrecisionType(rhs),
+									std::to_string(this->_val * cpy->getValue()));
 		return (res);
 	}
 
 	IOperand const * operator/(IOperand const & rhs) const
 	{
 		IOperand const	*res;
+		Type 			*cpy;
 
-		res = AVM::vm.createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val / rhs.getValue()));
+		cpy = reinterpret_cast<Type*>(rhs);
+		res = vm->createOperand(this->getPrecisionType(rhs),
+									std::to_string(this->_val / cpy->getValue()));
 		return (res);
 	}
 
 	IOperand const * operator%(IOperand const & rhs) const
 	{
 		IOperand const	*res;
+		Type 			*cpy;
 
-		res = AVM::vm.createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val % rhs.getValue()));
+		cpy = reinterpret_cast<Type*>(rhs);
+		res = vm->createOperand(this->getPrecisionType(rhs),
+									std::to_string(this->_val % cpy->getValue()));
 		return (res);
 	}
 
@@ -116,6 +126,8 @@ public:
 		return (this->_stringVal);
 	}
 
+	VM 				*vm;
+
 private:
 	eOperandType	_type;
 	std::string		_stringVal;
@@ -129,7 +141,7 @@ private:
 			return (tmp > SCHAR_MAX ? 1 : -1);
 		else if (type == INT16 && (tmp > SHRT_MAX || tmp < SHRT_MIN))
 			return (tmp > SHRT_MAX ? 1 : -1);
-		else if (types == INT32 && (tmp > INT_MAX || tmp < INT_MIN))
+		else if (type == INT32 && (tmp > INT_MAX || tmp < INT_MIN))
 			return (tmp > INT_MAX ? 1 : -1);
 		else if (type == FLOAT && (tmp > std::numeric_limits<float>::max() 
 			|| tmp < std::numeric_limits<float>::lowest()))

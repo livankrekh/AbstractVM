@@ -1,5 +1,4 @@
 #include "headers/exceptions.hpp"
-#include "headers/IOperands.hpp"
 
 std::string *STR_TYPE = ["INT8", "INT16", "INT32", "Float", "Double"];
 
