@@ -4,13 +4,15 @@
 # include <string>
 # include <climits>
 # include <limits>
-# include "exceptions.hpp"
 # include "VM.hpp"
+# include "exceptions.hpp"
 
 template<typename T>
 class Type : public IOperand
 {
 public:
+	VM 				*vm;
+
 	Type(void);
 	Type(Type const & cp);
 	Type(std::string const & value, eOperandType const & type)
@@ -56,7 +58,7 @@ public:
 		IOperand const	*res;
 		Type 			*cpy;
 
-		cpy = reinterpret_cast<Type*>(rhs);
+		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		res = vm->createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val + cpy->getValue()));
 		return (res);
@@ -67,7 +69,7 @@ public:
 		IOperand const	*res;
 		Type 			*cpy;
 
-		cpy = reinterpret_cast<Type*>(rhs);
+		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		res = vm->createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val - cpy->getValue()));
 		return (res);
@@ -78,7 +80,7 @@ public:
 		IOperand const	*res;
 		Type 			*cpy;
 
-		cpy = reinterpret_cast<Type*>(rhs);
+		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		res = vm->createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val * cpy->getValue()));
 		return (res);
@@ -89,7 +91,7 @@ public:
 		IOperand const	*res;
 		Type 			*cpy;
 
-		cpy = reinterpret_cast<Type*>(rhs);
+		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		res = vm->createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val / cpy->getValue()));
 		return (res);
@@ -100,7 +102,7 @@ public:
 		IOperand const	*res;
 		Type 			*cpy;
 
-		cpy = reinterpret_cast<Type*>(rhs);
+		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		res = vm->createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val % cpy->getValue()));
 		return (res);
@@ -125,8 +127,6 @@ public:
 	{
 		return (this->_stringVal);
 	}
-
-	VM 				*vm;
 
 private:
 	eOperandType	_type;
