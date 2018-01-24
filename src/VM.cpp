@@ -1,4 +1,4 @@
-#include "headers/VM.hpp"
+#include "headers/types.hpp"
 
 VM::VM(void)
 {

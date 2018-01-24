@@ -2,16 +2,40 @@
 # define TYPES_HPP
 # include <iostream>
 # include <string>
+# include <stack>
+# include <queue>
 # include <climits>
 # include <limits>
-# include "VM.hpp"
 # include "exceptions.hpp"
+
+class VM;
+typedef IOperand const * (VM::*MFPTR)(std::string const & value) const;
+
+class VM
+{
+public:
+	VM(void);
+	~VM(void);
+
+	IOperand const * createOperand( eOperandType type, std::string const & value ) const;
+	
+private:
+	MFPTR					funcptr[5];
+	std::stack<IOperand*>	_stack;
+	std::queue<std::string>	_output;
+
+	IOperand const * createInt8( std::string const & value ) const;
+	IOperand const * createInt16( std::string const & value ) const;
+	IOperand const * createInt32( std::string const & value ) const;
+	IOperand const * createFloat( std::string const & value ) const;
+	IOperand const * createDouble( std::string const & value ) const;
+};
 
 template<typename T>
 class Type : public IOperand
 {
 public:
-	VM 				*vm;
+	VM 				vm;
 
 	Type(void);
 	Type(Type const & cp);
@@ -59,7 +83,7 @@ public:
 		Type 			*cpy;
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
-		res = vm->createOperand(this->getPrecisionType(rhs),
+		res = vm.createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val + cpy->getValue()));
 		return (res);
 	}
@@ -70,7 +94,7 @@ public:
 		Type 			*cpy;
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
-		res = vm->createOperand(this->getPrecisionType(rhs),
+		res = vm.createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val - cpy->getValue()));
 		return (res);
 	}
@@ -81,7 +105,7 @@ public:
 		Type 			*cpy;
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
-		res = vm->createOperand(this->getPrecisionType(rhs),
+		res = vm.createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val * cpy->getValue()));
 		return (res);
 	}
@@ -92,7 +116,7 @@ public:
 		Type 			*cpy;
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
-		res = vm->createOperand(this->getPrecisionType(rhs),
+		res = vm.createOperand(this->getPrecisionType(rhs),
 									std::to_string(this->_val / cpy->getValue()));
 		return (res);
 	}
@@ -103,8 +127,8 @@ public:
 		Type 			*cpy;
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
-		res = vm->createOperand(this->getPrecisionType(rhs),
-									std::to_string(this->_val % cpy->getValue()));
+		res = vm.createOperand(this->getPrecisionType(rhs),
+									std::to_string(static_cast<int>(this->_val) % static_cast<int>(cpy->getValue())));
 		return (res);
 	}
 

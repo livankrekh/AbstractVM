@@ -1,6 +1,6 @@
 #include "headers/exceptions.hpp"
 
-std::string *STR_TYPE = ["INT8", "INT16", "INT32", "Float", "Double"];
+std::string STR_TYPE[5] = {"INT8", "INT16", "INT32", "Float", "Double"};
 
 OverflowException::OverflowException(eOperandType const & type, int line)
 {
