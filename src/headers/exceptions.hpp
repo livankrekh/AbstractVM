@@ -44,14 +44,34 @@ class DivisionException : public std::exception
 {
 public:
 	DivisionException(void);
+	DivisionException(int line);
 
 	virtual const char *what(void) const throw();
 	
 	~DivisionException(void) throw();
 
 private:
+	int		_line;
+
 	DivisionException const & operator=(DivisionException const & rhs);
 
+};
+
+class ModulWithFloat : public std::exception
+{
+public:
+	ModulWithFloat(void);
+	ModulWithFloat(eOperandType const & type, int line);
+
+	virtual const char *what(void) const throw();
+
+	~ModulWithFloat(void) throw();
+
+private:
+	int				_line;
+	std::string		_type;
+
+	ModulWithFloat const & operator=(ModulWithFloat const & rhs);
 };
 
 #endif

@@ -7,6 +7,7 @@ VM::VM(void)
 	this->funcptr[2] = &VM::createInt32;
 	this->funcptr[3] = &VM::createFloat;
 	this->funcptr[4] = &VM::createDouble;
+	this->_line = 0;
 }
 
 IOperand const * VM::createInt8(std::string const & value) const
@@ -40,4 +41,14 @@ IOperand const * VM::createOperand(eOperandType type, std::string const & value)
 
 	newOperand = (this->*funcptr[type])(value);
 	return (newOperand);
+}
+
+long			VM::getLine(void)
+{
+	return (this->_line);
+}
+
+void			VM::incrementLine(void)
+{
+	this->_line++;
 }
