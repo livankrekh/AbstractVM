@@ -1,6 +1,6 @@
 NAME = avm
 CC = g++
-SRC = src/VM.cpp src/exceptions.cpp src/main.cpp
+SRC = src/VM.cpp src/exceptions.cpp
 FLAGS = -Wall -Wextra -Werror -Wno-unused
 
 all: $(NAME)

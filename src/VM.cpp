@@ -64,3 +64,112 @@ void			VM::incrementLine(void)
 {
 	this->_line++;
 }
+
+void			VM::add(void)
+{
+	IOperand const * res;
+
+	if (_stack.size() < 2)
+		throw MinimumException(this->_line);
+	res = *(_stack[_stack.size() - 1]) + *(_stack[_stack.size() - 2]);
+	_stack.pop_back();
+	_stack.pop_back();
+	_stack.push_back(res);
+}
+
+void			VM::sub(void)
+{
+	IOperand const * res;
+
+	if (_stack.size() < 2)
+		throw MinimumException(this->_line);
+	res = *(_stack[_stack.size() - 2]) - *(_stack[_stack.size() - 1]);
+	_stack.pop_back();
+	_stack.pop_back();
+	_stack.push_back(res);
+}
+
+void			VM::mul(void)
+{
+	IOperand const * res;
+
+	if (_stack.size() < 2)
+		throw MinimumException(this->_line);
+	res = *(_stack[_stack.size() - 1]) * *(_stack[_stack.size() - 2]);
+	_stack.pop_back();
+	_stack.pop_back();
+	_stack.push_back(res);
+}
+
+void			VM::div(void)
+{
+	IOperand const * res;
+
+	if (_stack.size() < 2)
+		throw MinimumException(this->_line);
+	res = *(_stack[_stack.size() - 2]) / *(_stack[_stack.size() - 1]);
+	_stack.pop_back();
+	_stack.pop_back();
+	_stack.push_back(res);
+}
+
+void			VM::mod(void)
+{
+	IOperand const * res;
+
+	if (_stack.size() < 2)
+		throw MinimumException(this->_line);
+	res = *(_stack[_stack.size() - 2]) % *(_stack[_stack.size() - 1]);
+	_stack.pop_back();
+	_stack.pop_back();
+	_stack.push_back(res);
+}
+
+void			VM::stackAdd(char n)
+{
+	_stack.push_back(this->createOperand(INT8, std::to_string(n)));
+}
+
+void			VM::stackAdd(short int n)
+{
+	_stack.push_back(this->createOperand(INT16, std::to_string(n)));
+}
+
+void			VM::stackAdd(int n)
+{
+	_stack.push_back(this->createOperand(INT32, std::to_string(n)));
+}
+
+void			VM::stackAdd(float n)
+{
+	_stack.push_back(this->createOperand(FLOAT, std::to_string(n)));
+}
+
+void			VM::stackAdd(double n)
+{
+	_stack.push_back(this->createOperand(DOUBLE, std::to_string(n)));
+}
+
+void			VM::stackPop(void)
+{
+	if (_stack.empty())
+		throw StackEmptyException(this->_line);
+	_stack.pop_back();
+}
+
+void			VM::stackDump(void)
+{
+	std::string 	tmp;
+
+	_output.push_back("\033[34mDump________________________\033[0m");
+	for (int i = _stack.size() - 1; i >= 0; i++)
+		_output.push_back(_stack[i]->toString());
+	_output.push_back("\033[34m____________________________\033[0m");
+}
+
+bool			VM::stackAssert(eOperandType const & type, long double val)
+{
+	if (_stack.back()->getType() != type || std::stold(_stack.back()->toString()) != val)
+		throw AssertFalseException(this->_line);
+	return true;
+}

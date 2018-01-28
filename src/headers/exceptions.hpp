@@ -86,4 +86,46 @@ private:
 	ModulWithFloat const & operator=(ModulWithFloat const & rhs);
 };
 
+class StackEmptyException : public std::exception
+{
+public:
+	StackEmptyException(void);
+	StackEmptyException(int line);
+
+	virtual const char *what(void) const throw();
+
+	~StackEmptyException(void) throw() {}
+
+private:
+	int		_line;
+};
+
+class MinimumException : public std::exception
+{
+public:
+	MinimumException(void);
+	MinimumException(int line);
+
+	virtual const char *what(void) const throw();
+
+	~MinimumException(void) throw() {}
+
+private:
+	int			_line;
+};
+
+class AssertFalseException : public std::exception
+{
+public:
+	AssertFalseException(void);
+	AssertFalseException(int line);
+
+	virtual const char *what(void) const throw();
+
+	~AssertFalseException(void) throw();
+
+private:
+	int 	_line;
+};
+
 #endif

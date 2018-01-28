@@ -32,12 +32,32 @@ public:
 	IOperand const * 	createOperand( eOperandType type, std::string const & value ) const;
 	long				getLine(void);
 	void				incrementLine(void);
-	
+
+	// with stack
+
+	void				add(void);
+	void				sub(void);
+	void				mul(void);
+	void				div(void);
+	void				mod(void);
+
+	//Funcs with stack
+
+	void				stackAdd(char n);
+	void				stackAdd(short int n);
+	void				stackAdd(int n);
+	void				stackAdd(float n);
+	void				stackAdd(double n);
+
+	void				stackPop(void);
+	void				stackDump(void);
+	bool				stackAssert(eOperandType const & type, long double val);
+
 private:
-	MFPTR					funcptr[5];
-	std::stack<IOperand*>	_stack;
-	std::queue<std::string>	_output;
-	long					_line;
+	MFPTR							funcptr[5];
+	std::vector<IOperand const *>	_stack;
+	std::vector<std::string>		_output;
+	unsigned long					_line;
 
 	IOperand const * createInt8( std::string const & value ) const;
 	IOperand const * createInt16( std::string const & value ) const;
@@ -104,8 +124,10 @@ public:
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		tmp = this->_val + cpy->getValue();
 		type = this->getPrecisionType(rhs);
-		if (find_exceptions(tmp, type))
+		if (find_exceptions(tmp, type) < 0)
 			throw UnderflowException(type, AVM::vm->getLine());
+		else
+			throw OverflowException(type, AVM::vm->getLine());
 		res = AVM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));
 		return (res);
@@ -121,8 +143,10 @@ public:
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		tmp = this->_val - cpy->getValue();
 		type = this->getPrecisionType(rhs);
-		if (find_exceptions(tmp, type))
+		if (find_exceptions(tmp, type) < 0)
 			throw UnderflowException(type, AVM::vm->getLine());
+		else
+			throw OverflowException(type, AVM::vm->getLine());
 		res = AVM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));
 		return (res);
@@ -138,8 +162,10 @@ public:
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		tmp = this->_val * cpy->getValue();
 		type = this->getPrecisionType(rhs);
-		if (find_exceptions(tmp, type))
+		if (find_exceptions(tmp, type) < 0)
 			throw OverflowException(type, AVM::vm->getLine());
+		else
+			throw UnderflowException(type, AVM::vm->getLine());
 		res = AVM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));
 		return (res);
