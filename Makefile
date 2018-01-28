@@ -1,7 +1,7 @@
 NAME = avm
 CC = g++
-SRC = src/VM.cpp src/exceptions.cpp
-FLAGS = -Wall -Wextra -Werror -Wno-unused
+SRC = src/VM.cpp src/exceptions.cpp src/main.cpp
+FLAGS = -Wall -Wextra -Werror -std=c++11
 
 all: $(NAME)
 
