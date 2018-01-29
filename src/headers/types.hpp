@@ -52,6 +52,9 @@ public:
 	void				stackPop(void);
 	void				stackDump(void);
 	bool				stackAssert(eOperandType const & type, long double val);
+	void				stackPrint(void);
+
+	void				exitProg(void);
 
 private:
 	MFPTR							funcptr[5];
@@ -84,7 +87,7 @@ public:
 
 		this->_stringVal = value;
 		this->_type = type;
-		try 
+		try
 		{
 			if (this->_type < FLOAT)
 			{
@@ -111,8 +114,6 @@ public:
 			exit(0);
 		}
 	}
-
-	//TODO: Exception conditions in operators
 
 	IOperand const * operator+(IOperand const & rhs) const
 	{

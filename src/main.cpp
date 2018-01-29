@@ -17,4 +17,5 @@ int		main(int argc, char **argv)
 	VM		*vm = new VM;
 
 	AVM::vm = vm;
+	delete vm;
 }

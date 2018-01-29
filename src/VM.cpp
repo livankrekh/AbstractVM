@@ -173,3 +173,23 @@ bool			VM::stackAssert(eOperandType const & type, long double val)
 		throw AssertFalseException(this->_line);
 	return true;
 }
+
+void			VM::stackPrint(void)
+{
+	std::stringstream ss;
+
+	if (_stack[_stack.size() - 1]->getType() != INT8)
+		throw AssertFalseException(this->_line);
+	ss << _stack[_stack.size() - 1];
+	_output.push_back(ss.str());
+}
+
+void			VM::exitProg(void)
+{
+	while (!_stack.empty())
+	{
+		delete _stack[0];
+		_stack.erase(_stack.begin());
+	}
+	_output.push_back("\033[34mExit________________________\033[0m");
+}
