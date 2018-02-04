@@ -12,11 +12,9 @@
 
 #ifndef EXCEPTIONS_HPP
 # define EXCEPTIONS_HPP
-# include <iostream>
-# include <string>
+# include "IOperands.hpp"
 # include <exception>
 # include <sstream>
-# include "IOperands.hpp"
 
 class  OverflowException : public std::exception
 {
@@ -26,7 +24,7 @@ public:
 	
 	virtual const char *what(void) const throw();
 	
-	~OverflowException(void) throw();
+	~OverflowException(void) throw() {}
 
 private:
 	std::string		_type;
@@ -43,7 +41,7 @@ public:
 	
 	virtual const char *what(void) const throw();
 	
-	~UnderflowException(void) throw();
+	~UnderflowException(void) throw() {}
 
 private:
 	std::string		_type;
@@ -60,7 +58,7 @@ public:
 
 	virtual const char *what(void) const throw();
 	
-	~DivisionException(void) throw();
+	~DivisionException(void) throw() {}
 
 private:
 	int		_line;
@@ -77,7 +75,7 @@ public:
 
 	virtual const char *what(void) const throw();
 
-	~ModulWithFloat(void) throw();
+	~ModulWithFloat(void) throw() {}
 
 private:
 	int				_line;
@@ -122,7 +120,21 @@ public:
 
 	virtual const char *what(void) const throw();
 
-	~AssertFalseException(void) throw();
+	~AssertFalseException(void) throw() {}
+
+private:
+	int 	_line;
+};
+
+class IncorrectSyntaxException : public std::exception
+{
+public:
+	IncorrectSyntaxException(void);
+	IncorrectSyntaxException(int line);
+
+	virtual const char *what(void) const throw();
+
+	~IncorrectSyntaxException(void) throw() {}
 
 private:
 	int 	_line;

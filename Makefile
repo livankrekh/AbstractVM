@@ -1,7 +1,7 @@
 NAME = avm
 CC = g++
 SRC = src/VM.cpp src/exceptions.cpp src/main.cpp
-FLAGS = -Wall -Wextra -Werror -std=c++11
+FLAGS = -Wall -Wextra -Werror -std=c++11 -Wno-unknown-escape-sequence
 
 all: $(NAME)
 

@@ -22,6 +22,15 @@ VM::VM(void)
 	this->_line = 0;
 }
 
+VM::~VM(void)
+{
+	while (!_stack.empty())
+	{
+		delete _stack[0];
+		_stack.erase(_stack.begin());
+	}
+}
+
 IOperand const * VM::createInt8(std::string const & value) const
 {
 	return reinterpret_cast<IOperand const *>(new Type<char>(value, INT8));
@@ -192,4 +201,9 @@ void			VM::exitProg(void)
 		_stack.erase(_stack.begin());
 	}
 	_output.push_back("\033[34mExit________________________\033[0m");
+}
+
+void			VM::setQueue(std::string const & inf)
+{
+	this->_output.push_back(inf);
 }

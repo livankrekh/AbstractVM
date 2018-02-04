@@ -114,3 +114,17 @@ const char * AssertFalseException::what(void) const throw()
 	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
 	return (error.str().c_str());
 }
+
+IncorrectSyntaxException::IncorrectSyntaxException(int line)
+{
+	this->_line = line;
+}
+
+const char * IncorrectSyntaxException::what(void) const throw()
+{
+	std::stringstream error;
+
+	error << "\033[31mError #08: Incorrect syntax ";
+	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
+	return (error.str().c_str());
+}

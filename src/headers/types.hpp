@@ -12,13 +12,11 @@
 
 #ifndef TYPES_HPP
 # define TYPES_HPP
-# include <iostream>
-# include <string>
+# include "exceptions.hpp"
 # include <stack>
 # include <queue>
 # include <climits>
 # include <limits>
-# include "exceptions.hpp"
 
 class VM;
 typedef IOperand const * (VM::*MFPTR)(std::string const & value) const;
@@ -53,8 +51,9 @@ public:
 	void				stackDump(void);
 	bool				stackAssert(eOperandType const & type, long double val);
 	void				stackPrint(void);
-
 	void				exitProg(void);
+
+	void				setQueue(std::string const & inf);
 
 private:
 	MFPTR							funcptr[5];
