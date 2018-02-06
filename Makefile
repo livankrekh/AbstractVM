@@ -3,6 +3,13 @@ CC = g++
 SRC = src/VM.cpp src/exceptions.cpp src/main.cpp
 FLAGS = -Wall -Wextra -Werror -std=c++11 -Wno-unknown-escape-sequence
 
+OS := $(shell uname -s)
+
+ifeq ($(OS), Linux)
+	FLAGS = -Wall -Wextra -std=c++11
+endif
+
+
 all: $(NAME)
 
 $(NAME): $(SRC:.cpp=.o)

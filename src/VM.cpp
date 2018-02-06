@@ -20,6 +20,7 @@ VM::VM(void)
 	this->funcptr[3] = &VM::createFloat;
 	this->funcptr[4] = &VM::createDouble;
 	this->_line = 0;
+	VM::vm = &(*this);
 }
 
 VM::~VM(void)

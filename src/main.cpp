@@ -17,7 +17,7 @@
 void	stdin_input(void)
 {
 	std::string 	tmp;
-	std::regex reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
+	std::regex 		reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
 
 	while (tmp != ";;")
 	{
@@ -25,14 +25,42 @@ void	stdin_input(void)
 		{
 			std::getline(std::cin, tmp);
 			if (!std::regex_match(tmp.begin(), tmp.end(), reg))
-				throw IncorrectSyntaxException(AVM::vm->getLine());
+				throw IncorrectSyntaxException(VM::vm->getLine());
 		}
 		catch (std::exception const & e)
 		{
-			AVM::vm->setQueue(e.what());
+			VM::vm->setQueue(e.what());
 			std::cout << e.what();
 		}
-		AVM::vm->incrementLine();
+		VM::vm->incrementLine();
+	}
+}
+
+void	file_input(int argc, char **argv)
+{
+	std::ifstream 	fs;
+	std::string		tmp;
+	std::regex 		reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
+
+	for (int i = 1; i < argc; i++)
+	{
+		fs.open(argv[i], std::fstream::out);
+		while (!fs.eof())
+		{
+			try
+			{
+				getline(fs, tmp);
+				if (!std::regex_match(tmp.begin(), tmp.end(), reg))
+					throw IncorrectSyntaxException(VM::vm->getLine());
+			}
+			catch (std::exception const & e)
+			{
+				VM::vm->setQueue(e.what());
+				std::cout << e.what();
+			}
+			VM::vm->incrementLine();
+		}
+		fs.close();
 	}
 }
 
@@ -40,12 +68,12 @@ int		main(int argc, char **argv)
 {
 	VM		*vm_main = new VM;
 
-	AVM::vm = vm_main;
+	VM::vm = vm_main;
 	if (argc == 2)
 		stdin_input();
-	// else
-	// 	file_input(argv);
-	argv = NULL;
+	else
+		file_input(argc, argv);
 	delete vm_main;
+	VM::vm = NULL;
 	return (0);
 }
