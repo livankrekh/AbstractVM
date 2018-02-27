@@ -13,11 +13,13 @@
 #include "headers/types.hpp"
 #include <fstream>
 #include <regex>
+#include <sstream>
 
 void	stdin_input(void)
 {
-	std::string 	tmp;
-	std::regex 		reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
+	std::stringstream	out;
+	std::string 		tmp;
+	std::regex 			reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
 
 	while (tmp != ";;")
 	{
@@ -25,15 +27,18 @@ void	stdin_input(void)
 		{
 			std::getline(std::cin, tmp);
 			if (!std::regex_match(tmp.begin(), tmp.end(), reg))
-				throw IncorrectSyntaxException(VM::vm->getLine());
+				throw IncorrectSyntaxException();
 		}
 		catch (std::exception const & e)
 		{
-			VM::vm->setQueue(e.what());
-			std::cout << e.what();
+			out << e.what() << VM::vm->getLine() << std::endl;
+			VM::vm->setQueue(out.str());
+			std::cout << e.what() << VM::vm->getLine() << std::endl;
 		}
 		VM::vm->incrementLine();
 	}
+	VM::vm->exitProg();
+	VM::vm->printOutput();
 }
 
 void	file_input(int argc, char **argv)
@@ -51,7 +56,7 @@ void	file_input(int argc, char **argv)
 			{
 				getline(fs, tmp);
 				if (!std::regex_match(tmp.begin(), tmp.end(), reg))
-					throw IncorrectSyntaxException(VM::vm->getLine());
+					throw IncorrectSyntaxException();
 			}
 			catch (std::exception const & e)
 			{
@@ -61,6 +66,8 @@ void	file_input(int argc, char **argv)
 			VM::vm->incrementLine();
 		}
 		fs.close();
+		VM::vm->exitProg();
+		VM::vm->printOutput();
 	}
 }
 
@@ -69,11 +76,10 @@ int		main(int argc, char **argv)
 	VM		*vm_main = new VM;
 
 	VM::vm = vm_main;
-	if (argc == 2)
+	if (argc == 1)
 		stdin_input();
 	else
 		file_input(argc, argv);
 	delete vm_main;
-	VM::vm = NULL;
 	return (0);
 }

@@ -52,6 +52,7 @@ public:
 	bool				stackAssert(eOperandType const & type, long double val);
 	void				stackPrint(void);
 	void				exitProg(void);
+	void				printOutput(void);
 
 	void				setQueue(std::string const & inf);
 
@@ -169,7 +170,7 @@ public:
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		if (cpy->getValue() == 0)
-			throw DivisionException(VM::vm->getLine());
+			throw DivisionException();
 		tmp = this->_val / cpy->getValue();
 		type = this->getPrecisionType(rhs);
 		res = VM::vm->createOperand(type,
@@ -186,7 +187,7 @@ public:
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		if (cpy->getValue() == 0)
-			throw DivisionException(VM::vm->getLine());
+			throw DivisionException();
 		type = this->getPrecisionType(rhs);
 		if (type >= FLOAT)
 			throw ModulWithFloat(type, VM::vm->getLine());

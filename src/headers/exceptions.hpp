@@ -15,6 +15,7 @@
 # include "IOperands.hpp"
 # include <exception>
 # include <sstream>
+# include <string.h>
 
 class  OverflowException : public std::exception
 {
@@ -53,16 +54,13 @@ private:
 class DivisionException : public std::exception
 {
 public:
-	DivisionException(void);
-	DivisionException(int line);
+	DivisionException(void) {}
 
 	virtual const char *what(void) const throw();
 	
 	~DivisionException(void) throw() {}
 
 private:
-	int		_line;
-
 	DivisionException const & operator=(DivisionException const & rhs);
 
 };
@@ -87,57 +85,41 @@ private:
 class StackEmptyException : public std::exception
 {
 public:
-	StackEmptyException(void);
-	StackEmptyException(int line);
+	StackEmptyException(void) {}
 
 	virtual const char *what(void) const throw();
 
 	~StackEmptyException(void) throw() {}
-
-private:
-	int		_line;
 };
 
 class MinimumException : public std::exception
 {
 public:
-	MinimumException(void);
-	MinimumException(int line);
+	MinimumException(void) {}
 
 	virtual const char *what(void) const throw();
 
 	~MinimumException(void) throw() {}
-
-private:
-	int			_line;
 };
 
 class AssertFalseException : public std::exception
 {
 public:
-	AssertFalseException(void);
-	AssertFalseException(int line);
+	AssertFalseException(void) {}
 
 	virtual const char *what(void) const throw();
 
 	~AssertFalseException(void) throw() {}
-
-private:
-	int 	_line;
 };
 
 class IncorrectSyntaxException : public std::exception
 {
 public:
-	IncorrectSyntaxException(void);
-	IncorrectSyntaxException(int line);
+	IncorrectSyntaxException(void) {}
 
 	virtual const char *what(void) const throw();
 
 	~IncorrectSyntaxException(void) throw() {}
-
-private:
-	int 	_line;
 };
 
 #endif

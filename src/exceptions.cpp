@@ -44,18 +44,9 @@ const char *UnderflowException::what(void) const throw()
 	return (error.str().c_str());
 }
 
-DivisionException::DivisionException(int line)
-{
-	this->_line = line;
-}
-
 const char * DivisionException::what(void) const throw()
 {
-	std::stringstream error;
-
-	error << "\033[31mError #03: Division by zero at line " << this->_line;
-	error << "!\033[0m" << std::endl;
-	return (error.str().c_str());
+	return ("Error #03: Division by zero at line ");
 }
 
 ModulWithFloat::ModulWithFloat(eOperandType const & type, int line)
@@ -73,58 +64,22 @@ const char * ModulWithFloat::what(void) const throw()
 	return (error.str().c_str());
 }
 
-StackEmptyException::StackEmptyException(int line)
-{
-	this->_line = line;
-}
-
 const char * StackEmptyException::what(void) const throw()
 {
-	std::stringstream error;
-
-	error << "\033[31mError #05: Action with empty stack ";
-	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
-	return (error.str().c_str());
-}
-
-MinimumException::MinimumException(int line)
-{
-	this->_line = line;
+	return ("Error #05: Action with empty stack at line #");
 }
 
 const char * MinimumException::what(void) const throw()
 {
-	std::stringstream error;
-
-	error << "\033[31mError #06: Can't do this action - stack has less 2 elements ";
-	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
-	return (error.str().c_str());
-}
-
-AssertFalseException::AssertFalseException(int line)
-{
-	this->_line = line;
+	return ("Error #06: Can't do this action - stack has less 2 elements at line #");
 }
 
 const char * AssertFalseException::what(void) const throw()
 {
-	std::stringstream error;
-
-	error << "\033[31mError #07: Command Assert get false ";
-	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
-	return (error.str().c_str());
-}
-
-IncorrectSyntaxException::IncorrectSyntaxException(int line)
-{
-	this->_line = line;
+	return ("Error #07: Command Assert get false at line #");
 }
 
 const char * IncorrectSyntaxException::what(void) const throw()
 {
-	std::stringstream error;
-
-	error << "\033[31mError #08: Incorrect syntax ";
-	error << " \033[1mat line #" << this->_line << "\033[0m\033[0m" << std::endl;
-	return (error.str().c_str());
+	return ("Error #08: Incorrect syntax at line #");
 }
