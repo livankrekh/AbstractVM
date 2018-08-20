@@ -19,7 +19,8 @@ void	stdin_input(void)
 {
 	std::stringstream	out;
 	std::string 		tmp;
-	std::regex 			reg("((assert|push) (int(8|16|32)|float|double)\([0-9\.]\)|add|sub|mul|div|mod|dump|print|exits|;;|;.*)([\s]|;.*)");
+	// std::regex 			reg("((assert|push)\s((int(8|16|32)\(\-?\d+\))|((double|float)\(\-?\d+(\.\d+)?\))))");
+	std::regex 			reg("(dump|pop|add|sub|mul|div|mod|print|exit)|((assert|push) ((float|double)|int(8|16|32)))");
 
 	while (tmp != ";;")
 	{
