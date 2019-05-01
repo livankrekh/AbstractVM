@@ -174,25 +174,27 @@ void			VM::stackDump(void)
 	std::string 	tmp;
 
 	_output.push_back("Dump________________________");
-	for (int i = _stack.size() - 1; i >= 0; i++)
+	for (int i = _stack.size() - 1; i >= 0; i--)
 		_output.push_back(_stack[i]->toString());
 	_output.push_back("____________________________");
 }
 
-bool			VM::stackAssert(eOperandType const & type, long double val)
+void			VM::stackAssert(eOperandType const & type, long double val)
 {
 	if (_stack.back()->getType() != type || std::stold(_stack.back()->toString()) != val)
 		throw AssertFalseException();
-	return true;
 }
 
 void			VM::stackPrint(void)
 {
 	std::stringstream ss;
 
+	if (_stack.size() < 1)
+		throw StackEmptyException();
+
 	if (_stack[_stack.size() - 1]->getType() != INT8)
 		throw AssertFalseException();
-	ss << _stack[_stack.size() - 1];
+	ss << static_cast<char>(std::stoi(_stack[_stack.size() - 1]->toString()));
 	_output.push_back(ss.str());
 }
 

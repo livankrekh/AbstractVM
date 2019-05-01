@@ -49,7 +49,7 @@ public:
 
 	void				stackPop(void);
 	void				stackDump(void);
-	bool				stackAssert(eOperandType const & type, long double val);
+	void				stackAssert(eOperandType const & type, long double val);
 	void				stackPrint(void);
 	void				exitProg(void);
 	void				printOutput(void);
@@ -116,7 +116,7 @@ public:
 		type = this->getPrecisionType(rhs);
 		if (find_exceptions(tmp, type) < 0)
 			throw UnderflowException(type, VM::vm->getLine());
-		else
+		else if (find_exceptions(tmp, type) > 0)
 			throw OverflowException(type, VM::vm->getLine());
 		res = VM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));
@@ -135,7 +135,7 @@ public:
 		type = this->getPrecisionType(rhs);
 		if (find_exceptions(tmp, type) < 0)
 			throw UnderflowException(type, VM::vm->getLine());
-		else
+		else if (find_exceptions(tmp, type) > 0)
 			throw OverflowException(type, VM::vm->getLine());
 		res = VM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));
@@ -154,7 +154,7 @@ public:
 		type = this->getPrecisionType(rhs);
 		if (find_exceptions(tmp, type) < 0)
 			throw OverflowException(type, VM::vm->getLine());
-		else
+		else if (find_exceptions(tmp, type) > 0)
 			throw UnderflowException(type, VM::vm->getLine());
 		res = VM::vm->createOperand(type,
 						std::to_string(type < FLOAT ? static_cast<long>(tmp) : tmp));

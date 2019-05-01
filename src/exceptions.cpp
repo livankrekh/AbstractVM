@@ -46,7 +46,7 @@ const char *UnderflowException::what(void) const throw()
 
 const char * DivisionException::what(void) const throw()
 {
-	return ("Error #03: Division by zero at line ");
+	return ("\033[31mError #03: Division by zero at line #");
 }
 
 ModulWithFloat::ModulWithFloat(eOperandType const & type, int line)
