@@ -20,7 +20,6 @@
 class  OverflowException : public std::exception
 {
 public:
-	OverflowException(void);
 	OverflowException(eOperandType const & type, int line);
 	
 	virtual const char *what(void) const throw();
@@ -29,15 +28,16 @@ public:
 
 private:
 	std::string		_type;
-	int				_line;
 
 	OverflowException const & operator=(OverflowException const & rhs);
+
+public:
+	int	_line;
 };
 
 class  UnderflowException : public std::exception
 {
 public:
-	UnderflowException(void);
 	UnderflowException(eOperandType const & type, int line);
 	
 	virtual const char *what(void) const throw();
@@ -46,15 +46,18 @@ public:
 
 private:
 	std::string		_type;
-	int				_line;
 
 	UnderflowException const & operator=(UnderflowException const & rhs);
+
+public:
+	int	_line;
 };
 
 class DivisionException : public std::exception
 {
 public:
-	DivisionException(void) {}
+	DivisionException(void) : _line(-1) {}
+	DivisionException(int line);
 
 	virtual const char *what(void) const throw();
 	
@@ -63,12 +66,15 @@ public:
 private:
 	DivisionException const & operator=(DivisionException const & rhs);
 
+public:
+	int	_line;
+
 };
 
 class ModulWithFloat : public std::exception
 {
 public:
-	ModulWithFloat(void);
+	ModulWithFloat(void) : _line(-1) {}
 	ModulWithFloat(eOperandType const & type, int line);
 
 	virtual const char *what(void) const throw();
@@ -76,50 +82,80 @@ public:
 	~ModulWithFloat(void) throw() {}
 
 private:
-	int				_line;
 	std::string		_type;
 
 	ModulWithFloat const & operator=(ModulWithFloat const & rhs);
+
+public:
+	int	 _line;
 };
 
 class StackEmptyException : public std::exception
 {
 public:
-	StackEmptyException(void) {}
+	StackEmptyException(void) : _line(-1) {}
+	StackEmptyException(int line);
 
 	virtual const char *what(void) const throw();
 
 	~StackEmptyException(void) throw() {}
+
+private:
+	StackEmptyException const & operator=(StackEmptyException const & rhs);
+
+public:
+	int	 _line;
 };
 
 class MinimumException : public std::exception
 {
 public:
-	MinimumException(void) {}
+	MinimumException(void) : _line(-1) {}
+	MinimumException(int line);
 
 	virtual const char *what(void) const throw();
 
 	~MinimumException(void) throw() {}
+
+private:
+	MinimumException const & operator=(MinimumException const & rhs);
+
+public:
+	int	_line;
 };
 
 class AssertFalseException : public std::exception
 {
 public:
-	AssertFalseException(void) {}
+	AssertFalseException(void) : _line(-1) {}
+	AssertFalseException(int line);
 
 	virtual const char *what(void) const throw();
 
 	~AssertFalseException(void) throw() {}
+
+private:
+	AssertFalseException const & operator=(AssertFalseException const & rhs);
+
+public:
+	int _line;
 };
 
 class IncorrectSyntaxException : public std::exception
 {
 public:
-	IncorrectSyntaxException(void) {}
+	IncorrectSyntaxException(void) : _line(-1) {}
+	IncorrectSyntaxException(int line);
 
 	virtual const char *what(void) const throw();
 
 	~IncorrectSyntaxException(void) throw() {}
+
+private:
+	IncorrectSyntaxException const & operator=(IncorrectSyntaxException const & rhs);
+
+public:
+	int	_line;
 };
 
 #endif

@@ -108,6 +108,7 @@ void			VM::mul(void)
 	if (_stack.size() < 2)
 		throw MinimumException();
 	res = *(_stack[_stack.size() - 1]) * *(_stack[_stack.size() - 2]);
+
 	_stack.pop_back();
 	_stack.pop_back();
 	_stack.push_back(res);
@@ -173,15 +174,15 @@ void			VM::stackDump(void)
 {
 	std::string 	tmp;
 
-	_output.push_back("Dump________________________");
+	_output.push_back("\033[34m\033[1mDump________________________");
 	for (int i = _stack.size() - 1; i >= 0; i--)
 		_output.push_back(_stack[i]->toString());
-	_output.push_back("____________________________");
+	_output.push_back("____________________________\033[0m");
 }
 
 void			VM::stackAssert(eOperandType const & type, long double val)
 {
-	if (_stack.back()->getType() != type || std::stold(_stack.back()->toString()) != val)
+	if (_stack.back()->getType() != type || static_cast<float>(std::stold(_stack.back()->toString())) != static_cast<float>(val))
 		throw AssertFalseException();
 }
 
@@ -214,7 +215,7 @@ void			VM::exitProg(void)
 		delete _stack[0];
 		_stack.erase(_stack.begin());
 	}
-	_output.push_back("Exit________________________");
+	_output.push_back("\033[31m\033[1mExit________________________\033[0m");
 }
 
 void			VM::setQueue(std::string const & inf)

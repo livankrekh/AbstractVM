@@ -151,6 +151,7 @@ public:
 
 		cpy = reinterpret_cast<Type*>(const_cast<IOperand*>(&rhs));
 		tmp = this->_val * cpy->getValue();
+
 		type = this->getPrecisionType(rhs);
 		if (find_exceptions(tmp, type) < 0)
 			throw OverflowException(type, VM::vm->getLine());
@@ -217,13 +218,8 @@ public:
 		return (this->_stringVal);
 	}
 
-private:
-	eOperandType	_type;
-	std::string		_stringVal;
-	T 				_val;
-
 	template<typename V>
-	int		find_exceptions(V tmp, eOperandType const & type) const
+	static int		find_exceptions(V tmp, eOperandType const & type)
 	{
 		if (type == INT8 && (tmp > SCHAR_MAX || tmp < SCHAR_MIN))
 			return (tmp > SCHAR_MAX ? 1 : -1);
@@ -239,6 +235,11 @@ private:
 			return (tmp > std::numeric_limits<double>::max() ? 1 : -1);
 		return (0);
 	}
+
+private:
+	eOperandType	_type;
+	std::string		_stringVal;
+	T 				_val;
 
 	eOperandType	getPrecisionType(IOperand const & rhs) const
 	{
