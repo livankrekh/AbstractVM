@@ -158,4 +158,17 @@ public:
 	int	_line;
 };
 
+class NoExitException : public std::exception
+{
+public:
+	NoExitException(void);
+
+	virtual const char *what(void) const throw();
+
+	~NoExitException(void) throw() {}
+
+private:
+	NoExitException const & operator=(NoExitException const & rhs);
+};
+
 #endif

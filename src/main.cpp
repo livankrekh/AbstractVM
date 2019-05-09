@@ -17,21 +17,24 @@
 
 void	stdin_input(void)
 {
-	std::stringstream	out;
 	std::string 		tmp;
-	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.+)$");
-	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)$");
-	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)$");
+	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)$");
+	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)\\s*(;.*)?$");
+	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			empty_line("^\\s*$");
+	bool				exit;
 
 	while (tmp != ";;")
 	{
 		try
 		{
 			std::getline(std::cin, tmp);
+			if (tmp == ";;")
+				break;
 			if (std::regex_match(tmp.begin(), tmp.end(), empty_line)) {
 				continue;
 			}
+			exit = false;
 			if (std::regex_match(tmp.begin(), tmp.end(), commands_without_arguments)) {
 				if (tmp.rfind("pop", 0) == 0) {
 					VM::vm->stackPop();
@@ -60,6 +63,7 @@ void	stdin_input(void)
 				else if (tmp.rfind("exit", 0) == 0) {
 					VM::vm->exitProg();
 					VM::vm->printOutput();
+					exit = true;
 				}
 			}
 			else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_float_double)) {
@@ -164,19 +168,34 @@ void	stdin_input(void)
 			}
 			else
 			{
-				throw IncorrectSyntaxException(VM::vm->getLine());
+				throw IncorrectSyntaxException();
 			}
 		}
 		catch (std::exception const & e)
 		{
+			std::stringstream	out;
+
 			if (strlen(e.what()) > 1 && e.what()[strlen(e.what()) - 1] == '#')
-				out << e.what() << VM::vm->getLine() << std::endl;
+				out << e.what() << VM::vm->getLine();
 			else
 				out << e.what();
 			VM::vm->setQueue(out.str());
 		}
 		VM::vm->incrementLine();
 	}
+	try
+	{
+		if (!exit)
+			throw NoExitException();
+	}
+	catch (std::exception const & e)
+	{
+		std::stringstream	out;
+
+		out << e.what();
+		VM::vm->setQueue(out.str());
+	}
+
 	VM::vm->printOutput();
 	VM::vm->exitProg();
 }
@@ -186,10 +205,11 @@ void	file_input(int argc, char **argv)
 	std::stringstream	out;
 	std::ifstream 		fs;
 	std::string			tmp;
-	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.+)$");
-	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)$");
-	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)$");
+	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)$");
+	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)\\s*(;.*)?$");
+	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			empty_line("^\\s*$");
+	bool				exit;
 
 	for (int i = 1; i < argc; i++)
 	{
@@ -199,9 +219,15 @@ void	file_input(int argc, char **argv)
 			try
 			{
 				getline(fs, tmp);
+
+				if (tmp == ";;")
+					break;
 				if (std::regex_match(tmp.begin(), tmp.end(), empty_line)) {
 					continue;
 				}
+
+				exit = false;
+
 				if (std::regex_match(tmp.begin(), tmp.end(), commands_without_arguments)) {
 					if (tmp.rfind("pop", 0) == 0) {
 						VM::vm->stackPop();
@@ -229,6 +255,7 @@ void	file_input(int argc, char **argv)
 					}
 					else if (tmp.rfind("exit", 0) == 0) {
 						VM::vm->exitProg();
+						exit = true;
 					}
 				}
 				else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_float_double)) {
@@ -333,7 +360,7 @@ void	file_input(int argc, char **argv)
 				}
 				else
 				{
-					throw IncorrectSyntaxException(VM::vm->getLine());
+					throw IncorrectSyntaxException();
 				}
 			}
 			catch (std::exception const & e)
@@ -347,6 +374,16 @@ void	file_input(int argc, char **argv)
 			VM::vm->incrementLine();
 		}
 		fs.close();
+		try
+		{
+			if (!exit)
+				throw NoExitException();
+		}
+		catch (std::exception const & e)
+		{
+			out << e.what() << std::endl;
+			VM::vm->setQueue(out.str());
+		}
 		VM::vm->printOutput();
 		VM::vm->exitProg();
 	}
