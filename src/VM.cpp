@@ -34,36 +34,36 @@ VM::~VM(void)
 	}
 }
 
-IOperand const * VM::createInt8(std::string const & value) const
+IOperand const * VM::createInt8(long double val) const
 {
-	return reinterpret_cast<IOperand const *>(new Type<long double>(value, INT8));
+	return reinterpret_cast<IOperand const *>(new Type<long double>(val, INT8));
 }
 
-IOperand const * VM::createInt16(std::string const & value) const
+IOperand const * VM::createInt16(long double val) const
 {
-	return reinterpret_cast<IOperand const *>(new Type<long double>(value, INT16));
+	return reinterpret_cast<IOperand const *>(new Type<long double>(val, INT16));
 }
 
-IOperand const * VM::createInt32(std::string const & value) const
+IOperand const * VM::createInt32(long double val) const
 {
-	return reinterpret_cast<IOperand const *>(new Type<long double>(value, INT32));
+	return reinterpret_cast<IOperand const *>(new Type<long double>(val, INT32));
 }
 
-IOperand const * VM::createFloat(std::string const & value) const
+IOperand const * VM::createFloat(long double val) const
 {
-	return reinterpret_cast<IOperand const *>(new Type<long double>(value, FLOAT));
+	return reinterpret_cast<IOperand const *>(new Type<long double>(val, FLOAT));
 }
 
-IOperand const * VM::createDouble(std::string const & value) const
+IOperand const * VM::createDouble(long double val) const
 {
-	return reinterpret_cast<IOperand const *>(new Type<long double>(value, DOUBLE));
+	return reinterpret_cast<IOperand const *>(new Type<long double>(val, DOUBLE));
 }
 
-IOperand const * VM::createOperand(eOperandType type, std::string const & value) const
+IOperand const * VM::createOperand(eOperandType type, long double val) const
 {
 	IOperand const * newOperand;
 
-	newOperand = (this->*funcptr[type])(value);
+	newOperand = (this->*funcptr[type])(val);
 	return (newOperand);
 }
 
@@ -140,27 +140,35 @@ void			VM::mod(void)
 
 void			VM::stackAdd(char n)
 {
-	_stack.push_back(this->createOperand(INT8, std::to_string(n)));
+	_stack.push_back(this->createOperand(INT8, n));
 }
 
 void			VM::stackAdd(short int n)
 {
-	_stack.push_back(this->createOperand(INT16, std::to_string(n)));
+	_stack.push_back(this->createOperand(INT16, n));
 }
 
 void			VM::stackAdd(int n)
 {
-	_stack.push_back(this->createOperand(INT32, std::to_string(n)));
+	_stack.push_back(this->createOperand(INT32, n));
 }
 
 void			VM::stackAdd(float n)
 {
-	_stack.push_back(this->createOperand(FLOAT, std::to_string(n)));
+	_stack.push_back(this->createOperand(FLOAT, n));
 }
 
 void			VM::stackAdd(double n)
 {
-	_stack.push_back(this->createOperand(DOUBLE, std::to_string(n)));
+	_stack.push_back(this->createOperand(DOUBLE, n));
+}
+
+void			VM::stackAdd(long double n, eOperandType const & type)
+{
+	if (type == FLOAT)
+		_stack.push_back(this->createOperand(FLOAT, n));
+	else
+		_stack.push_back(this->createOperand(DOUBLE, n));
 }
 
 void			VM::stackPop(void)
