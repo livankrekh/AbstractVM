@@ -15,10 +15,10 @@
 #include <regex>
 #include <sstream>
 
-void	stdin_input(void)
+void	stdin_input(bool verbose)
 {
 	std::string 		tmp;
-	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)$");
+	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)\\s*(;.*)?$");
 	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			empty_line("^\\s*$");
@@ -68,19 +68,18 @@ void	stdin_input(void)
 			}
 			else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_float_double)) {
 				std::string type = tmp.substr(tmp.find(" ") + 1, tmp.size());
-				std::string value = type.substr(type.find("(") + 1, type.size() );
+				std::string value = type.substr(type.find("(") + 1, type.find(")") );
 				long double val = 0;
+				try
+				{
+					val = std::stold(value);
+				}
+				catch (std::exception const & e)
+				{
+					throw OverflowException(DOUBLE, VM::vm->getLine());
+				}
 
 				if (tmp.rfind("push", 0) == 0) {
-					try
-					{
-						val = std::stold(value);
-					}
-					catch (std::exception const & e)
-					{
-						throw OverflowException(DOUBLE, VM::vm->getLine());
-					}
-
 					if (type.rfind("float", 0) == 0) {
 						int except = Type<float>::find_exceptions(val, FLOAT);
 
@@ -88,7 +87,7 @@ void	stdin_input(void)
 							throw OverflowException(FLOAT, VM::vm->getLine());
 						else if (except == -1)
 							throw UnderflowException(FLOAT, VM::vm->getLine());
-						VM::vm->stackAdd( val, FLOAT );
+						VM::vm->stackAdd( value , FLOAT );
 					}
 					else if (type.rfind("double", 0) == 0) {
 						int except = Type<double>::find_exceptions(val, DOUBLE);
@@ -97,32 +96,44 @@ void	stdin_input(void)
 							throw OverflowException(DOUBLE, VM::vm->getLine());
 						else if (except == -1)
 							throw UnderflowException(DOUBLE, VM::vm->getLine());
-						VM::vm->stackAdd( val, DOUBLE );
+						VM::vm->stackAdd( value , DOUBLE );
 					}
 				}
 				else if (tmp.rfind("assert", 0) == 0) {
 					if (type.rfind("float", 0) == 0) {
+						int except = Type<float>::find_exceptions(val, FLOAT);
+
+						if (except == 1)
+							throw OverflowException(FLOAT, VM::vm->getLine());
+						else if (except == -1)
+							throw UnderflowException(FLOAT, VM::vm->getLine());
 						VM::vm->stackAssert(FLOAT, val );
 					}
 					else if (type.rfind("double", 0) == 0) {
-						VM::vm->stackAssert(DOUBLE, val );
+						int except = Type<double>::find_exceptions(val, DOUBLE);
+
+						if (except == 1)
+							throw OverflowException(DOUBLE, VM::vm->getLine());
+						else if (except == -1)
+							throw UnderflowException(DOUBLE, VM::vm->getLine());
+						VM::vm->stackAssert( DOUBLE, val );
 					}
 				}
 			}
 			else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_int)) {
 				std::string type = tmp.substr(tmp.find(" ") + 1, tmp.size());
+				std::string value = type.substr(type.find("(") + 1, type.find(")") );
 				long long val = 0;
+				try
+				{
+					val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
+				}
+				catch (std::exception const & e)
+				{
+					throw OverflowException(INT32, VM::vm->getLine());
+				}
 
 				if (tmp.rfind("push", 0) == 0) {
-					try
-					{
-						val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
-					}
-					catch (std::exception const & e)
-					{
-						throw OverflowException(INT32, VM::vm->getLine());
-					}
-
 					if (type.rfind("int8", 0) == 0) {
 						int except = Type<char>::find_exceptions(val, INT8);
 
@@ -130,7 +141,7 @@ void	stdin_input(void)
 							throw OverflowException(INT8, VM::vm->getLine());
 						else if (except == -1)
 							throw UnderflowException(INT8, VM::vm->getLine());
-						VM::vm->stackAdd( static_cast<char>( std::stoi(type.substr(type.find("(") + 1, type.size() )) ) );
+						VM::vm->stackAdd( value, INT8 );
 					}
 					else if (type.rfind("int16", 0) == 0) {
 						int except = Type<short int>::find_exceptions(val, INT16);
@@ -139,7 +150,7 @@ void	stdin_input(void)
 							throw OverflowException(INT16, VM::vm->getLine());
 						else if (except == -1)
 							throw UnderflowException(INT16, VM::vm->getLine());
-						VM::vm->stackAdd( static_cast<short int>( std::stoi(type.substr(type.find("(") + 1, type.size() )) ) );
+						VM::vm->stackAdd( value, INT16 );
 					}
 					else if (type.rfind("int32", 0) == 0) {
 						int except = Type<int>::find_exceptions(val, INT32);
@@ -148,12 +159,10 @@ void	stdin_input(void)
 							throw OverflowException(INT32, VM::vm->getLine());
 						else if (except == -1)
 							throw UnderflowException(INT32, VM::vm->getLine());
-						VM::vm->stackAdd( std::stoi(type.substr(type.find("(") + 1, type.size() )) );
+						VM::vm->stackAdd( value, INT32 );
 					}
 				}
 				if (tmp.rfind("assert", 0) == 0) {
-					long long val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
-
 					if (type.rfind("int8", 0) == 0) {
 						int except = Type<char>::find_exceptions(val, INT8);
 
@@ -197,6 +206,13 @@ void	stdin_input(void)
 			else
 				out << e.what();
 			VM::vm->setQueue(out.str());
+
+			if (!verbose)
+			{
+				VM::vm->printOutput();
+				VM::vm->exitProg();
+				return ;
+			}
 		}
 		VM::vm->incrementLine();
 	}
@@ -217,12 +233,12 @@ void	stdin_input(void)
 	VM::vm->exitProg();
 }
 
-void	file_input(int argc, char **argv)
+void	file_input(int argc, char **argv, bool verbose)
 {
 	std::stringstream	out;
 	std::ifstream 		fs;
 	std::string			tmp;
-	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)$");
+	std::regex			commands_without_arguments("^(pop|dump|add|sub|mul|div|mod|print|exit|;;|;.*)\\s*(;.*)?$");
 	std::regex			commands_with_arguments_int("^(push|assert) (int8|int16|int32)\\(([\\-]?[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			commands_with_arguments_float_double("^(push|assert) (float|double)\\(([\\-]?[0-9]+\\.[0-9]+)\\)\\s*(;.*)?$");
 	std::regex			empty_line("^\\s*$");
@@ -231,6 +247,15 @@ void	file_input(int argc, char **argv)
 	for (int i = 1; i < argc; i++)
 	{
 		fs.open(argv[i], std::fstream::out);
+
+		if (!strcmp(argv[i], "-v"))
+			continue ;
+
+		if (fs.fail()) {
+			std::cout << "Cannot open file - " << argv[i] << std::endl;
+			continue ;
+		}
+
 		while (!fs.eof())
 		{
 			try
@@ -277,19 +302,18 @@ void	file_input(int argc, char **argv)
 				}
 				else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_float_double)) {
 					std::string type = tmp.substr(tmp.find(" ") + 1, tmp.size());
-					std::string value = type.substr(type.find("(") + 1, type.size() );
+					std::string value = type.substr(type.find("(") + 1, type.find(")") );
 					long double val = 0;
+					try
+					{
+						val = std::stold(value);
+					}
+					catch (std::exception const & e)
+					{
+						throw OverflowException(DOUBLE, VM::vm->getLine());
+					}
 
 					if (tmp.rfind("push", 0) == 0) {
-						try
-						{
-							val = std::stold(value);
-						}
-						catch (std::exception const & e)
-						{
-							throw OverflowException(DOUBLE, VM::vm->getLine());
-						}
-
 						if (type.rfind("float", 0) == 0) {
 							int except = Type<float>::find_exceptions(val, FLOAT);
 
@@ -297,7 +321,7 @@ void	file_input(int argc, char **argv)
 								throw OverflowException(FLOAT, VM::vm->getLine());
 							else if (except == -1)
 								throw UnderflowException(FLOAT, VM::vm->getLine());
-							VM::vm->stackAdd( val, FLOAT );
+							VM::vm->stackAdd( value , FLOAT );
 						}
 						else if (type.rfind("double", 0) == 0) {
 							int except = Type<double>::find_exceptions(val, DOUBLE);
@@ -306,32 +330,44 @@ void	file_input(int argc, char **argv)
 								throw OverflowException(DOUBLE, VM::vm->getLine());
 							else if (except == -1)
 								throw UnderflowException(DOUBLE, VM::vm->getLine());
-							VM::vm->stackAdd( val, DOUBLE );
+							VM::vm->stackAdd( value , DOUBLE );
 						}
 					}
 					else if (tmp.rfind("assert", 0) == 0) {
 						if (type.rfind("float", 0) == 0) {
+							int except = Type<float>::find_exceptions(val, FLOAT);
+
+							if (except == 1)
+								throw OverflowException(FLOAT, VM::vm->getLine());
+							else if (except == -1)
+								throw UnderflowException(FLOAT, VM::vm->getLine());
 							VM::vm->stackAssert(FLOAT, val );
 						}
 						else if (type.rfind("double", 0) == 0) {
+							int except = Type<double>::find_exceptions(val, DOUBLE);
+
+							if (except == 1)
+								throw OverflowException(DOUBLE, VM::vm->getLine());
+							else if (except == -1)
+								throw UnderflowException(DOUBLE, VM::vm->getLine());
 							VM::vm->stackAssert(DOUBLE, val );
 						}
 					}
 				}
 				else if (std::regex_match(tmp.begin(), tmp.end(), commands_with_arguments_int)) {
 					std::string type = tmp.substr(tmp.find(" ") + 1, tmp.size());
+					std::string value = type.substr(type.find("(") + 1, type.find(")") );
 					long long val = 0;
+					try
+					{
+						val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
+					}
+					catch (std::exception const & e)
+					{
+						throw OverflowException(INT32, VM::vm->getLine());
+					}
 
 					if (tmp.rfind("push", 0) == 0) {
-						try
-						{
-							val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
-						}
-						catch (std::exception const & e)
-						{
-							throw OverflowException(INT32, VM::vm->getLine());
-						}
-
 						if (type.rfind("int8", 0) == 0) {
 							int except = Type<char>::find_exceptions(val, INT8);
 
@@ -339,7 +375,7 @@ void	file_input(int argc, char **argv)
 								throw OverflowException(INT8, VM::vm->getLine());
 							else if (except == -1)
 								throw UnderflowException(INT8, VM::vm->getLine());
-							VM::vm->stackAdd( static_cast<char>( val ) );
+							VM::vm->stackAdd( value, INT8 );
 						}
 						else if (type.rfind("int16", 0) == 0) {
 							int except = Type<short int>::find_exceptions(val, INT16);
@@ -348,7 +384,7 @@ void	file_input(int argc, char **argv)
 								throw OverflowException(INT16, VM::vm->getLine());
 							else if (except == -1)
 								throw UnderflowException(INT16, VM::vm->getLine());
-							VM::vm->stackAdd( static_cast<short int>( val ) );
+							VM::vm->stackAdd( value, INT16 );
 						}
 						else if (type.rfind("int32", 0) == 0) {
 							int except = Type<int>::find_exceptions(val, INT32);
@@ -357,12 +393,10 @@ void	file_input(int argc, char **argv)
 								throw OverflowException(INT32, VM::vm->getLine());
 							else if (except == -1)
 								throw UnderflowException(INT32, VM::vm->getLine());
-							VM::vm->stackAdd( static_cast<int>( val ) );
+							VM::vm->stackAdd( value, INT32 );
 						}
 					}
 					if (tmp.rfind("assert", 0) == 0) {
-						long long val = std::stoll(type.substr(type.find("(") + 1, type.size() ));
-
 						if (type.rfind("int8", 0) == 0) {
 							int except = Type<char>::find_exceptions(val, INT8);
 
@@ -404,6 +438,13 @@ void	file_input(int argc, char **argv)
 				else
 					out << e.what();
 				VM::vm->setQueue(out.str());
+
+				if (!verbose)
+				{
+					VM::vm->printOutput();
+					VM::vm->exitProg();
+					return ;
+				}
 			}
 			VM::vm->incrementLine();
 		}
@@ -428,10 +469,18 @@ int		main(int argc, char **argv)
 	VM		*vm_main = new VM;
 
 	VM::vm = vm_main;
-	if (argc == 1)
-		stdin_input();
+
+	if (argc < 2)
+	{
+		stdin_input(false);
+	}
 	else
-		file_input(argc, argv);
+	{
+		if (!strcmp(argv[1], "-v"))
+			stdin_input(true);
+		else
+			file_input(argc, argv, false);
+	}
 	delete vm_main;
 	return (0);
 }

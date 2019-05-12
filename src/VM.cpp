@@ -59,10 +59,12 @@ IOperand const * VM::createDouble(long double val) const
 	return reinterpret_cast<IOperand const *>(new Type<long double>(val, DOUBLE));
 }
 
-IOperand const * VM::createOperand(eOperandType type, long double val) const
+IOperand const * VM::createOperand(eOperandType type, const std::string & value ) const
 {
 	IOperand const * newOperand;
+	long double val;
 
+	val = std::stold(value);
 	newOperand = (this->*funcptr[type])(val);
 	return (newOperand);
 }
@@ -138,37 +140,9 @@ void			VM::mod(void)
 	_stack.push_back(res);
 }
 
-void			VM::stackAdd(char n)
+void			VM::stackAdd(const std::string & n, eOperandType const & type)
 {
-	_stack.push_back(this->createOperand(INT8, n));
-}
-
-void			VM::stackAdd(short int n)
-{
-	_stack.push_back(this->createOperand(INT16, n));
-}
-
-void			VM::stackAdd(int n)
-{
-	_stack.push_back(this->createOperand(INT32, n));
-}
-
-void			VM::stackAdd(float n)
-{
-	_stack.push_back(this->createOperand(FLOAT, n));
-}
-
-void			VM::stackAdd(double n)
-{
-	_stack.push_back(this->createOperand(DOUBLE, n));
-}
-
-void			VM::stackAdd(long double n, eOperandType const & type)
-{
-	if (type == FLOAT)
-		_stack.push_back(this->createOperand(FLOAT, n));
-	else
-		_stack.push_back(this->createOperand(DOUBLE, n));
+	_stack.push_back(this->createOperand(type, n));
 }
 
 void			VM::stackPop(void)
@@ -190,7 +164,11 @@ void			VM::stackDump(void)
 
 void			VM::stackAssert(eOperandType const & type, long double val)
 {
-	if (_stack.back()->getType() != type || static_cast<float>(std::stold(_stack.back()->toString())) != static_cast<float>(val))
+	if (_stack.size() < 1)
+		throw StackEmptyException();
+
+	if (_stack.back()->getType() != type
+			|| static_cast<double>(std::stod(_stack.back()->toString()) != static_cast<double>(val) ) )
 		throw AssertFalseException();
 }
 
@@ -203,7 +181,11 @@ void			VM::stackPrint(void)
 
 	if (_stack[_stack.size() - 1]->getType() != INT8)
 		throw AssertFalseException();
-	ss << static_cast<char>(std::stoi(_stack[_stack.size() - 1]->toString()));
+
+	ss << "\033[32m\033[1m";
+	ss << static_cast<char>(std::stoi(_stack.back()->toString()));
+	ss << "\033[0m";
+
 	_output.push_back(ss.str());
 }
 

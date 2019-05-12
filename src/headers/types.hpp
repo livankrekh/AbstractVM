@@ -18,6 +18,7 @@
 # include <climits>
 # include <limits>
 # include <cfloat>
+# include <cmath>
 
 class VM;
 typedef IOperand const * (VM::*MFPTR)(long double val) const;
@@ -42,12 +43,7 @@ public:
 
 	//Funcs with stack
 
-	void				stackAdd(char n);
-	void				stackAdd(short int n);
-	void				stackAdd(int n);
-	void				stackAdd(float n);
-	void				stackAdd(double n);
-	void				stackAdd(long double n, eOperandType const & type);
+	void				stackAdd(const std::string & n, eOperandType const & type);
 
 	void				stackPop(void);
 	void				stackDump(void);
@@ -71,6 +67,9 @@ private:
 	IOperand const * createInt32( long double val ) const;
 	IOperand const * createFloat( long double val ) const;
 	IOperand const * createDouble( long double val ) const;
+
+public:
+	IOperand const * createOperand( eOperandType type, const std::string & value ) const;
 };
 
 template<typename T>
@@ -148,7 +147,7 @@ public:
 			throw UnderflowException(type, VM::vm->getLine());
 		else if (find_exceptions(tmp, type) > 0)
 			throw OverflowException(type, VM::vm->getLine());
-		res = VM::vm->createOperand(type, tmp);
+		res = VM::vm->createOperand( type, std::to_string(tmp) );
 		return (res);
 	}
 
@@ -166,7 +165,7 @@ public:
 			throw UnderflowException(type, VM::vm->getLine());
 		else if (find_exceptions(tmp, type) > 0)
 			throw OverflowException(type, VM::vm->getLine());
-		res = VM::vm->createOperand(type, tmp);
+		res = VM::vm->createOperand(type, std::to_string(tmp) );
 		return (res);
 	}
 
@@ -185,7 +184,7 @@ public:
 			throw OverflowException(type, VM::vm->getLine());
 		else if (find_exceptions(tmp, type) > 0)
 			throw UnderflowException(type, VM::vm->getLine());
-		res = VM::vm->createOperand(type, tmp);
+		res = VM::vm->createOperand( type, std::to_string(tmp) );
 		return (res);
 	}
 
@@ -201,7 +200,7 @@ public:
 			throw DivisionException();
 		tmp = this->_val / cpy->getValue();
 		type = this->getPrecisionType(rhs);
-		res = VM::vm->createOperand(type, tmp);
+		res = VM::vm->createOperand( type, std::to_string(tmp) );
 		return (res);
 	}
 
@@ -219,7 +218,7 @@ public:
 		if (type >= FLOAT)
 			throw ModulWithFloat(type, VM::vm->getLine());
 		tmp = static_cast<int>(this->_val) % static_cast<int>(cpy->getValue());
-		res = VM::vm->createOperand(type, tmp);
+		res = VM::vm->createOperand( type, std::to_string(tmp) );
 		return (res);
 	}
 
@@ -236,11 +235,6 @@ public:
 	T const &		getValue(void) const
 	{
 		return (this->_val);
-	}
-
-	void 			setValue(T val)
-	{
-		this->_val = val;
 	}
 
 	std::string const & toString(void) const
